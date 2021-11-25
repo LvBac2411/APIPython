@@ -1,11 +1,13 @@
+import os
 import cv2
 import base64
 import json
 import numpy as np
 
 #ma hoa base64
-def encodeImg(data, file="encodedData.json"):
-    encode = json.dumps([base64.b64encode(data).decode('utf-8'),
+def encodeImg(path="Media/CD.jpg", file="encodedData.json"):
+    data = cv2.imread(path)
+    encode = json.dumps([base64.b64encode(data).decode("ascii"),
     str(data.dtype),
     data.shape])
     with open(file, "w+") as f:
@@ -24,19 +26,24 @@ def decodeImg(file="encodedData.json"):
     # cv2.waitKey(0)
     return img
 
-def filterImg(img):
+def filterImg(path="Media/CD.jpg"):
+    outpath = "MediaEdit" + os.sep + os.path.basename(path)
+    img = cv2.imread(path)
     blur = cv2.bilateralFilter(img,9,60,60)
-    return blur
+    cv2.imwrite(outpath,blur)
+    return outpath
 
 #tim canh bang PP Canny
-def CannyDetection(img, percentage=100):
+def CannyDetection(path="Media/CD.jpg", percentage=100):
+    img = cv2.imread(path)
     edges = cv2.Canny(img, 100, 200)
     edges = _Percentage(edges, percentage)
     cv2.imshow('image', edges)
     cv2.waitKey(0)
 
 #Nhan dien khuon mat
-def FaceRec(img, percentage=100):
+def FaceRec(path="Media/CD.jpg", percentage=100):
+    img=cv2.imread(path)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
     faces = faceCascade.detectMultiScale(
@@ -62,4 +69,9 @@ def _Percentage(img, per):
     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
     return resized
 
+
+filterImg()
+# img = decodeImg("tet.txt")
+# cv2.imshow("data", img)
+# cv2.waitKey(0)
 #encodeImg("D:\Pictures\clock.jpg", "encodedData.json")
