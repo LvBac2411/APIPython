@@ -1,5 +1,7 @@
 from base64 import decode
-from os import abort
+from os import abort, getcwd, path
+import os
+import cv2
 from flask import Flask, json,jsonify, request
 import utils
 
@@ -14,15 +16,15 @@ def post_add():
     return request.data.decode("utf-8")
 
 @app.route("/picture/filterImg/",methods=["GET"])
-def post_filter():
-    img = utils.decodeImg()
-    blur = utils.filterImg(img)
-    code = utils.encodeImg(blur)
-    return code
+def get_filter():
+    # path = request.headers['path']
+    blur = utils.filterImg()
+    blur = getcwd() + os.sep + blur
+    return blur
 
-@app.route("/get_my_ip", methods=["GET"])
+@app.route("/myip", methods=["GET"])
 def get_my_ip():
-    return jsonify({'ip': request.remote_addr}), 200
+    return jsonify({'your ip address': request.remote_addr}), 200
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0',port=5000,debug=True)
